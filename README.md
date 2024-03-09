@@ -7,7 +7,7 @@ A collection of functions accidentally not included into web3.js and Ethers.js
 
 ## Installation ##
 ```shell
-npm i @lazy-sol/a-missing-jem
+npm i @lazy-sol/a-missing-gem
 ```
 
 ## Usage ##

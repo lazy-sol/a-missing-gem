@@ -3,11 +3,14 @@
 // BN constants, functions to work with BN
 const {BN, toBN, isBN} = web3.utils;
 
-// 2^256
-const TWO256 = (new BN(2)).pow(new BN(256));
-
 // crypto is used to get enough randomness for the random BN generation
 const {randomBytes} = require("crypto");
+
+// 10^18
+const ether = (new BN(10)).pow(new BN(18));
+
+// 2^256
+const TWO256 = (new BN(2)).pow(new BN(256));
 
 // generates random BN in a [0, 2^256) range: r ∈ [0, 2^256)
 function random_bn256() {
@@ -185,6 +188,7 @@ module.exports = {
 	BN,
 	toBN,
 	isBN,
+	ether,
 	TWO256,
 	random_bn256,
 	random_bn255,
