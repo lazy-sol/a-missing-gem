@@ -66,22 +66,30 @@ function print_amt(amt, dm = new BN(10).pow(new BN(18))) {
 	if(amt.isZero()) {
 		return '0';
 	}
+	const isNeg = amt.isNeg();
+	if(isNeg) {
+		amt = amt.neg();
+	}
 	const THOUSAND = new BN(1_000);
 	const MILLION = new BN(1_000_000);
 	const BILLION = new BN(1_000_000_000);
+	let result;
 	if(amt.div(dm).lt(THOUSAND)) {
-		return dm.lt(MILLION)? amt.div(dm).toNumber(): amt.div(MILLION).toNumber() / dm.div(MILLION).toNumber() + '';
+		result = dm.lt(MILLION)? amt.div(dm).toNumber(): amt.div(MILLION).toNumber() / dm.div(MILLION).toNumber() + '';
 	}
 	else if(amt.div(dm).lt(MILLION)) {
 		const k = amt.div(dm).toNumber() / 1_000;
-		return k + "k";
+		result = k + "k";
 	}
 	else if(amt.div(dm).lt(BILLION)) {
 		const m = amt.div(dm).toNumber() / 1_000_000;
-		return m + "m";
+		result = m + "m";
 	}
-	const b = amt.div(dm).div(MILLION).toNumber() / 1_000_000_000;
-	return b + "g";
+	else {
+		const b = amt.div(dm).div(MILLION).toNumber() / 1_000_000_000;
+		result = b + "g";
+	}
+	return isNeg? "-" + result: result;
 }
 
 // graphically draw amounts array as a string to be printed in the consoles
@@ -94,15 +102,32 @@ function draw_amounts(amounts) {
 
 	let s = "[";
 	let remainder = new BN(0);
-	for(let amount of amounts) {
-		amount = new BN(amount);
+	for(let i = 0; i < amounts.length; i++) {
+		// current amount to represent
+		const amount = new BN(amounts[i]);
+		// how many dots to print to represent the amount
 		const skip = amount.add(remainder).muln(100).div(total_amount);
-		remainder = amount.add(remainder).sub(skip.mul(total_amount).divn(100));
-		if(!skip.isZero()) {
+
+		// if there is anything to print
+		if(skip.gt(new BN(0))) {
+			// print the dots, but left one char space for the deliminator
 			for(let i = 0; i < skip.toNumber() - 1; i++) {
 				s += ".";
 			}
+			// print the deliminator
+			s += i < amounts.length - 1? "|": ".";
+
+			// how much value wasn't printed due to rounding
+			// we'll need to add this and print in the next loop iteration
+			remainder = amount.add(remainder).sub(skip.mul(total_amount).divn(100));
+		}
+		// if there's nothing to print
+		else if(i < amounts.length - 1) {
+			// print the deliminator
 			s += "|";
+
+			// update the remainder, as we consumed one symbol more than we were allowed to
+			remainder = remainder.sub(total_amount.divn(100));
 		}
 	}
 	s += "]";

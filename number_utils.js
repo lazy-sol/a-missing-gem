@@ -10,6 +10,46 @@ function date_to_unix(date) {
 	return date.getTime() / 1000 | 0;
 }
 
+// prints unix time stamp in a human readable format
+// example: 5/8/2027
+function print_unix_ts(unix_timestamp, locale = "en-US") {
+	const date = unix_to_date(unix_timestamp);
+	return date.toLocaleDateString(locale)
+}
+
+// prints the duration of seconds in a human readable format
+// example: 2y 2M 2w 3d 11h 24m
+function print_duration(seconds) {
+	const weeks = seconds / 604_800 | 0;
+	const days = seconds % 604_800 / 86_400 | 0;
+	const hours = seconds % 86_400 / 3600 | 0;
+	const minutes = seconds % 3600 / 60 | 0;
+	seconds %= 60;
+
+	const result_parts = [];
+	if(weeks) {
+		result_parts.push(`${weeks}w`);
+	}
+	if(days) {
+		result_parts.push(`${days}d`);
+	}
+	if(hours) {
+		const h = `${hours}`.padStart(2, "0");
+		const m = `${minutes}`.padStart(2, "0");
+		const s = `${seconds}`.padStart(2, "0");
+		result_parts.push(`${h}:${m}:${s}`);
+	}
+	else if(minutes) {
+		const m = `${minutes}`.padStart(2, "0");
+		const s = `${seconds}`.padStart(2, "0");
+		result_parts.push(`${m}:${s}`);
+	}
+	else if(seconds) {
+		result_parts.push(`${seconds}s`);
+	}
+	return result_parts.length > 0? result_parts.join(" "): "0";
+}
+
 // sums up an array of numbers, returns Number (or whatever inputs are)
 function sum_n(array) {
 	return array.reduce((accumulator, currentVal) => accumulator + currentVal, 0);
@@ -59,6 +99,8 @@ function print_f2(n) {
 module.exports = {
 	unix_to_date,
 	date_to_unix,
+	print_unix_ts,
+	print_duration,
 	sum_n,
 	random_int,
 	random_element,
