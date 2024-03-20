@@ -3,6 +3,9 @@
 // BN constants, functions to work with BN
 const {BN, toBN, isBN} = web3.utils;
 
+// using assert for internal validity/states check
+const assert = require("assert");
+
 // crypto is used to get enough randomness for the random BN generation
 const {randomBytes} = require("crypto");
 
@@ -95,43 +98,44 @@ function print_amt(amt, dm = new BN(10).pow(new BN(18))) {
 // graphically draw amounts array as a string to be printed in the consoles
 // example: [..|.........|................|..........|...||...............|...........................|...|......]
 function draw_amounts(amounts) {
-	const total_amount = sum_bn(amounts);
-	if(total_amount.isZero()) {
-		return "[" + ".".repeat(100) + "]";
+	assert(amounts.findIndex(a => a.lt(new BN(0))) < 0, "array contains negative number(s)");
+
+	const delimiters = amounts.length - 1;
+	if(delimiters >= 100) {
+		return `[${"|".repeat(100)}]`;
 	}
 
-	let s = "[";
+	const total_amount = sum_bn(amounts);
+	if(delimiters <= 0 || total_amount.isZero()) {
+		return `[${".".repeat(100)}]`;
+	}
+
+	const amounts_weight = 100 - delimiters;
+
+	// resulting string
+	let s = "";
+	// rounding down error accumulator
 	let remainder = new BN(0);
+	// output builder loop builds a string of length 100
 	for(let i = 0; i < amounts.length; i++) {
 		// current amount to represent
 		const amount = new BN(amounts[i]);
 		// how many dots to print to represent the amount
-		const skip = amount.add(remainder).muln(100).div(total_amount);
+		const dots_to_print = amount.add(remainder).muln(amounts_weight).div(total_amount).toNumber();
+		// how much we've lost due to rounding down
+		remainder = remainder.add(amount).sub(total_amount.muln(dots_to_print).divn(amounts_weight));
 
-		// if there is anything to print
-		if(skip.gt(new BN(0))) {
-			// print the dots, but left one char space for the deliminator
-			for(let i = 0; i < skip.toNumber() - 1; i++) {
-				s += ".";
-			}
-			// print the deliminator
-			s += i < amounts.length - 1? "|": ".";
-
-			// how much value wasn't printed due to rounding
-			// we'll need to add this and print in the next loop iteration
-			remainder = amount.add(remainder).sub(skip.mul(total_amount).divn(100));
+		// print the dots
+		for(let i = 0; i < dots_to_print; i++) {
+			s += ".";
 		}
-		// if there's nothing to print
-		else if(i < amounts.length - 1) {
-			// print the deliminator
+		// print the deliminator
+		if(i < amounts.length - 1) {
 			s += "|";
-
-			// update the remainder, as we consumed one symbol more than we were allowed to
-			remainder = remainder.sub(total_amount.divn(100));
 		}
 	}
-	s += "]";
-	return s;
+
+	return `[${s}]`;
 }
 
 // graphically draw the percent value as a string to be printed in the consoles
