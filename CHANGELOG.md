@@ -1,3 +1,6 @@
+v1.0.4:
+* added index.js re-exporting all the modules for simplified function imports in the client apps
+
 v1.0.3:
 * bugfix: draw_amount to properly fit into 100 chars
 
