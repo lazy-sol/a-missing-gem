@@ -45,6 +45,7 @@ const {
 // deployment utils
 const {
 	print_contract_details,
+	print_named_contract_details,
 } = require("./deployment_utils");
 
 // Re-export the functions
@@ -80,4 +81,5 @@ module.exports = {
 	print_booleans,
 	print_symbols,
 	print_contract_details,
+	print_named_contract_details,
 };

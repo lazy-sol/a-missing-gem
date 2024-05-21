@@ -10,6 +10,11 @@ const {
 
 // prints contract details
 async function print_contract_details(a0, abi, address, operator_address) {
+	return print_named_contract_details(a0, undefined, abi, address, operator_address);
+}
+
+// prints contract name and details
+async function print_named_contract_details(a0, name = "web3 contract", abi, address, operator_address) {
 	// connect to the contract
 	const web3_contract = new web3.eth.Contract(abi, address);
 
@@ -91,7 +96,7 @@ async function print_contract_details(a0, abi, address, operator_address) {
 		// ignored
 	}
 
-	console.log("successfully connected to web3 contract at %o", address);
+	console.log("successfully connected to %s at %o", name, address);
 
 	// log the data if any
 	if(table_data.length) {
@@ -105,4 +110,5 @@ async function print_contract_details(a0, abi, address, operator_address) {
 module.exports = {
 	print_amt,
 	print_contract_details,
+	print_named_contract_details,
 }
