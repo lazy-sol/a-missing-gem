@@ -1,6 +1,6 @@
 {
   "name": "@lazy-sol/a-missing-gem",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A collection of functions accidentally not included into web3.js and Ethers.js",
   "main": "index.js",
   "scripts": {
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/lazy-sol/a-missing-gem/issues"
   },
-  "homepage": "https://github.com/lazy-sol/a-missing-gem#readme"
+  "homepage": "https://github.com/lazy-sol/a-missing-gem#readme",
+  "peerDependencies": {
+    "web3-utils": ">=1.0.0"
+  }
 }

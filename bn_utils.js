@@ -1,7 +1,7 @@
 // Both Truffle and Hardhat with Truffle make an instance of web3 available in the global scope
 
 // BN constants, functions to work with BN
-const {BN, toBN, isBN} = web3.utils;
+const {BN, toBN, isBN} = require("web3-utils");
 
 // using assert for internal validity/states check
 const assert = require("assert");
@@ -85,11 +85,11 @@ function print_amt(amt, dm = new BN(10).pow(new BN(18))) {
 		result = k + "k";
 	}
 	else if(amt.div(dm).lt(BILLION)) {
-		const m = amt.div(dm).toNumber() / 1_000_000;
+		const m = amt.div(dm).div(THOUSAND).toNumber() / 1_000;
 		result = m + "m";
 	}
 	else {
-		const b = amt.div(dm).div(MILLION).toNumber() / 1_000_000_000;
+		const b = amt.div(dm).div(MILLION).toNumber() / 1_000;
 		result = b + "g";
 	}
 	return isNeg? "-" + result: result;
