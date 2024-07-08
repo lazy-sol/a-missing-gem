@@ -12,6 +12,9 @@ const {randomBytes} = require("crypto");
 // 10^18
 const ether = (new BN(10)).pow(new BN(18));
 
+// 10^9
+const gwei = (new BN(10)).pow(new BN(9));
+
 // 2^256
 const TWO256 = (new BN(2)).pow(new BN(256));
 
@@ -74,8 +77,9 @@ function print_amt(amt, dm = new BN(10).pow(new BN(18))) {
 		amt = amt.neg();
 	}
 	const THOUSAND = new BN(1_000);
-	const MILLION = new BN(1_000_000);
-	const BILLION = new BN(1_000_000_000);
+	const MILLION = THOUSAND.mul(THOUSAND);
+	const BILLION = MILLION.mul(THOUSAND);
+	const TRILLION = BILLION.mul(THOUSAND);
 	let result;
 	if(amt.div(dm).lt(THOUSAND)) {
 		result = dm.lt(MILLION)? amt.div(dm).toNumber(): amt.div(MILLION).toNumber() / dm.div(MILLION).toNumber() + '';
@@ -88,9 +92,13 @@ function print_amt(amt, dm = new BN(10).pow(new BN(18))) {
 		const m = amt.div(dm).div(THOUSAND).toNumber() / 1_000;
 		result = m + "m";
 	}
-	else {
+	else if(amt.div(dm).lt(TRILLION)) {
 		const b = amt.div(dm).div(MILLION).toNumber() / 1_000;
-		result = b + "g";
+		result = b + "b";
+	}
+	else {
+		const t = amt.div(dm).div(TRILLION).toNumber() / 1_000;
+		result = t + "t";
 	}
 	return isNeg? "-" + result: result;
 }
@@ -218,6 +226,7 @@ module.exports = {
 	toBN,
 	isBN,
 	ether,
+	gwei,
 	TWO256,
 	random_bn256,
 	random_bn255,

@@ -1,5 +1,16 @@
+v1.0.7:
+* added: "gwei" 10^9 constant
+* bugfix: print_amt to use "b" suffix for billion
+* added: print_amt to support trillions
+
+v1.0.6:
+* bugfix: wrong print_amt calculation for 'g'
+
+v1.0.5:
+* added: print_named_contract_details function
+
 v1.0.4:
-* added index.js re-exporting all the modules for simplified function imports in the client apps
+* added: index.js re-exporting all the modules for simplified function imports in the client apps
 
 v1.0.3:
 * bugfix: draw_amount to properly fit into 100 chars
