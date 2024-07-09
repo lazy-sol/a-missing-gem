@@ -51,6 +51,9 @@ function random_bn(from, to) {
 	from = new BN(from);
 	to = new BN(to);
 
+	// verify from <= to
+	assert(from.lte(to), '"from" must not exceed "to"');
+
 	// generate 256 bits of randomness, a random number R ∈ [0, 2^256)
 	const rnd256 = new BN(randomBytes(32));
 
@@ -70,7 +73,7 @@ function print_amt(amt, dm = new BN(10).pow(new BN(18))) {
 	dm = new BN(dm);
 
 	if(amt.isZero()) {
-		return '0';
+		return 0;
 	}
 	const isNeg = amt.isNeg();
 	if(isNeg) {
@@ -82,7 +85,7 @@ function print_amt(amt, dm = new BN(10).pow(new BN(18))) {
 	const TRILLION = BILLION.mul(THOUSAND);
 	let result;
 	if(amt.div(dm).lt(THOUSAND)) {
-		result = dm.lt(MILLION)? amt.div(dm).toNumber(): amt.div(MILLION).toNumber() / dm.div(MILLION).toNumber() + '';
+		result = dm.lt(MILLION)? amt.div(dm).toNumber(): amt.div(MILLION).toNumber() / dm.div(MILLION).toNumber();
 	}
 	else if(amt.div(dm).lt(MILLION)) {
 		const k = amt.div(dm).toNumber() / 1_000;

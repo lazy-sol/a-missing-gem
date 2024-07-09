@@ -1,3 +1,7 @@
+v1.0.8:
+* bugfix: don't allow from > to inputs into random_bn(from, to)
+* bugfix: do not format simple number as strings in print_amt()
+
 v1.0.7:
 * added: "gwei" 10^9 constant
 * bugfix: print_amt to use "b" suffix for billion
