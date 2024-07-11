@@ -67,10 +67,10 @@ function sum_bn(array) {
 }
 
 // user friendly big number printer
-function print_amt(amt, dm = new BN(10).pow(new BN(18))) {
+function print_amt(amt, dm) {
 	// convert inputs to BNs if they are not BNs
 	amt = new BN(amt);
-	dm = new BN(dm);
+	dm = new BN(dm || (amt.gt(ether)? ether: 1));
 
 	if(amt.isZero()) {
 		return 0;

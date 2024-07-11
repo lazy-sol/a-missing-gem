@@ -1,3 +1,6 @@
+v1.0.9
+* added: dynamic default "dm" value calculation based on "amt" in print_amt(amt, dm)
+
 v1.0.8:
 * bugfix: don't allow from > to inputs into random_bn(from, to)
 * bugfix: do not format simple number as strings in print_amt()
