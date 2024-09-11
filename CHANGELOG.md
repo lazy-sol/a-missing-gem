@@ -1,3 +1,7 @@
+v1.0.10
+* bugfix: use `1 gwei` instead of `1 ether` as an 18 decimal threshold switch in the
+  dynamic default "dm" value calculation based on "amt" in print_amt(amt, dm)
+
 v1.0.9
 * added: dynamic default "dm" value calculation based on "amt" in print_amt(amt, dm)
 

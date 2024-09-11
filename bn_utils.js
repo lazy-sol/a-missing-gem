@@ -70,7 +70,7 @@ function sum_bn(array) {
 function print_amt(amt, dm) {
 	// convert inputs to BNs if they are not BNs
 	amt = new BN(amt);
-	dm = new BN(dm || (amt.gt(ether)? ether: 1));
+	dm = new BN(dm || (amt.gt(gwei)? ether: 1));
 
 	if(amt.isZero()) {
 		return 0;
