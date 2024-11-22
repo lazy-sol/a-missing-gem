@@ -20,7 +20,7 @@ Code:
 // BN utils
 const {
 	print_amt,
-} = require("@lazy-sol/a-missing-jem/bn_utils");
+} = require("@lazy-sol/a-missing-gem/bn_utils");
 
 // get the account balance as BN
 const balance = await web3.eth.getBalance("0x000000000000000000000000000000000000dEaD");
