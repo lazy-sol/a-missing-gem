@@ -18,34 +18,64 @@ const gwei = (new BN(10)).pow(new BN(9));
 // 2^256
 const TWO256 = (new BN(2)).pow(new BN(256));
 
-// generates random BN in a [0, 2^256) range: r ∈ [0, 2^256)
+/**
+ * Generates a random BN in the range [0, 2^256).
+ *
+ * @returns {BN} A random BN.
+ */
 function random_bn256() {
 	// use crypto.randomBytes to generate 256 bits of randomness and wrap it into BN
 	return new BN(randomBytes(32));
 }
 
-// generates random BN in a [0, 2^255) range: r ∈ [0, 2^256)
+/**
+ * Generates a random BN in the range [0, 2^255).
+ *
+ * @returns {BN} A random BN.
+ */
 function random_bn255() {
 	// use crypto.randomBytes to generate 256 bits of randomness, wrap it into BN, reduce to 255 bits
 	return new BN(randomBytes(32)).divn(2);
 }
 
-// generates random BN of length `bits`
+/**
+ * Generates a random BN of a specified bit length.
+ *
+ * @param {number} bits The desired bit length.
+ * @returns {BN} A random BN.
+ */
 function random_bits(bits) {
 	return new BN(randomBytes(bits >> 3 /* convert bits to bytes */).toString('hex'), 16);
 }
 
-// generates random Ethereum address
+/**
+ * Generates a random Ethereum address.
+ *
+ * @returns {string} A random Ethereum address.
+ */
 function random_address() {
 	return web3.eth.accounts.create().address;
 }
 
-// generates cryptographically strong pseudo-random HEX strings from a given byte size
+/**
+ * Generates a cryptographically strong pseudo-random HEX string.
+ *
+ * @param {number} [size=32] The desired byte size of the HEX string.
+ * @returns {string} A random HEX string.
+ */
 function random_hex(size = 32) {
 	return web3.utils.randomHex(size);
 }
 
-// generates random BN in a [from, to) range: r ∈ [from, to)
+/**
+ * Generates a random BN in the range [from, to).
+ * The `from` and `to` parameters will be treated as numbers.
+ *
+ * @param {any} from The lower bound of the range (inclusive).
+ * @param {any} to The upper bound of the range (exclusive).
+ * @returns {BN} A random BN within the specified range.
+ * @throws {Error} If "from" is greater than "to".
+ */
 function random_bn(from, to) {
 	// convert inputs to BNs if they are not BNs
 	from = new BN(from);
@@ -61,12 +91,25 @@ function random_bn(from, to) {
 	return from.add(to.sub(from).mul(rnd256).div(TWO256)); // r = R * range / 2^256 + from
 }
 
-// sums up an array of BNs, returns BN
+/**
+ * Sums up an array of numeric values (or values that can be converted to BNs).
+ * The elements of the array will be treated as numbers.
+ *
+ * @param {Array<any>} array An array of numeric values.
+ * @returns {BN} The sum of the numbers as a BN.
+ */
 function sum_bn(array) {
 	return array.reduce((accumulator, currentVal) => accumulator.add(new BN(currentVal)), new BN(0));
 }
 
-// user friendly big number printer
+/**
+ * Provides a user-friendly representation of a big number.
+ * The `amt` and `dm` parameters will be treated as numbers.
+ *
+ * @param {any} amt The amount to format.
+ * @param {any} [dm] The divisor. If not provided, defaults to ether if amt > gwei, otherwise 1.
+ * @returns {number|string} A user-friendly representation of the amount (e.g., 123, 4.56k, 7.89m, etc.).
+ */
 function print_amt(amt, dm) {
 	// convert inputs to BNs if they are not BNs
 	amt = new BN(amt);
@@ -104,6 +147,50 @@ function print_amt(amt, dm) {
 		result = t + "t";
 	}
 	return isNeg? "-" + result: result;
+}
+
+/**
+ * Returns a user-friendly string representation of an object.
+ * Numbers within the object are converted to strings.
+ * Other data types are preserved as-is. Nested objects are recursively processed.
+ *
+ * @param {object} obj The object to stringify.
+ * @param {boolean} [ignore_numeric_keys=true] Whether to ignore numeric keys (e.g., from Web3).
+ * @returns {object} A stringified version of the object, with numbers as strings.
+ */
+function print_obj(obj, ignore_numeric_keys = true) {
+	// Helper function to check if a value is a primitive
+	function isPrimitive(val) {
+		return (val !== Object(val));
+	}
+
+	// Recursive function to convert object properties
+	function convert(obj) {
+		const result = {};
+		for(const key in obj) {
+			if(obj.hasOwnProperty(key)) {
+				if(ignore_numeric_keys && !isNaN(parseInt(key))) {
+					continue;
+				}
+				const value = obj[key];
+				if(isPrimitive(value)) {
+					result[key] = value;
+				}
+				else if(typeof value.toString === 'function') {
+					result[key] = value.toString();
+				}
+				else if(typeof value === 'object') {
+					result[key] = convert(value);
+				}
+				else {
+					result[key] = value;
+				}
+			}
+		}
+		return result;
+	}
+
+	return convert(obj);
 }
 
 // graphically draw amounts array as a string to be printed in the consoles
@@ -164,26 +251,53 @@ function draw_percent(percent) {
 	return s;
 }
 
-// calculates a/b % with the 2 digits after the decimal dot precision, like 14.55
+/**
+ * draws values one by one, placing "*" (asterisk) instead of defined non-zero values
+ * and " " (whitespace) instead of undefined or zero values
+ */
+function draw_booleans(arr) {
+	return arr.map(s => s? "*": " ").join("");
+}
+
+/**
+ * draws values one by one, placing " ", ".", "+", "*", or "!" instead of the values
+ */
+function draw_symbols(
+	arr,
+	arr_max = arr.reduce((a, v) => a.gte(new BN(v))? a: new BN(v), new BN(0)),
+) {
+	return arr.map((r, i) => print_symbol(r, arr_max[i] || arr_max)).join("");
+}
+
+/**
+ * Calculates (a / b) * 100 with 2 digits of decimal precision.
+ * The `a` and `b` parameters will be treated as numbers.
+ *
+ * @param {any} a The numerator.
+ * @param {any} b The denominator.
+ * @returns {number} The result of (a / b) * 100 with 2 decimal places.
+ */
 function to_percent(a, b) {
 	a = new BN(a);
 	b = new BN(b);
 	return a.muln(100_00).div(b).toNumber() / 100;
 }
 
-// prints the percent with the 2 digits after the decimal dot precision, like 14.00%
+/**
+ * prints the percent with the 2 digits after the decimal dot precision, like 14.00%
+ * @deprecated
+ */
 function print_percent(percent) {
 	return `${percent.toFixed(2)}%`;
 }
 
-// prints a value using "*" (asterisk) if its defined and is not zero, or using " " (whitespace) otherwise
-function print_bool(bool) {
-	return bool? "*": " ";
-}
-// prints values one by one, placing "*" (asterisk) instead of defined non-zero values
-// and " " (whitespace) instead of undefined or zero values
+/**
+ * prints values one by one, placing "*" (asterisk) instead of defined non-zero values
+ * and " " (whitespace) instead of undefined or zero values
+ * @deprecated
+ */
 function print_booleans(arr) {
-	return arr.map(s => print_bool(s)).join("");
+	return draw_booleans(arr);
 }
 
 // prints a value using one of the following symbols:
@@ -215,12 +329,12 @@ function print_symbol(amt, max = amt) {
 	}
 	return "^";
 }
-// prints values one by one, placing " ", ".", "+", "*", or "!" instead of the values
-function print_symbols(
-	arr,
-	arr_max = arr.reduce((a, v) => a.gte(new BN(v))? a: new BN(v), new BN(0))
-) {
-	return arr.map((r, i) => print_symbol(r, arr_max[i] || arr_max)).join("");
+/**
+ * prints values one by one, placing " ", ".", "+", "*", or "!" instead of the values
+ * @deprecated
+ */
+function print_symbols(arr, arr_max) {
+	return draw_symbols(arr, arr_max);
 }
 
 // export public module API
@@ -239,8 +353,11 @@ module.exports = {
 	random_bn,
 	sum_bn,
 	print_amt,
+	print_obj,
 	draw_amounts,
 	draw_percent,
+	draw_booleans,
+	draw_symbols,
 	to_percent,
 	print_percent,
 	print_booleans,
