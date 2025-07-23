@@ -1,3 +1,7 @@
+v1.0.13
++ added: `web3_tuple_to_object` web3.js contract call result converter to a plain JavaScript object
++ added: `object_matches_expected` convenient objects comparator
+
 v1.0.12
 + added: `print_obj` user-friendly object printer for objects containing big numbers
 - deprecated: `print_percent`, `print_booleans`, `print_symbols` functions

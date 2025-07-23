@@ -52,6 +52,12 @@ const {
 	print_named_contract_details,
 } = require("./deployment_utils");
 
+// web3 utils
+const {
+	web3_tuple_to_object,
+	object_matches_expected,
+} = require("./web3_utils");
+
 // Re-export the functions
 module.exports = {
 	default_deadline,
@@ -90,4 +96,6 @@ module.exports = {
 	print_symbols,
 	print_contract_details,
 	print_named_contract_details,
+	web3_tuple_to_object,
+	object_matches_expected,
 };
