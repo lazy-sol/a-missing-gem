@@ -1,3 +1,7 @@
+v1.0.14
+* fix: improved `web3_tuple_to_object` function to support `BN` values
+* fix: improved `web3_tuple_to_object` function not to return null if input is a plain string
+
 v1.0.13
 + added: `web3_tuple_to_object` web3.js contract call result converter to a plain JavaScript object
 + added: `object_matches_expected` convenient objects comparator
