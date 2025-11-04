@@ -1,6 +1,6 @@
 {
   "name": "@lazy-sol/a-missing-gem",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "A collection of functions accidentally not included into web3.js and Ethers.js",
   "main": "index.js",
   "scripts": {

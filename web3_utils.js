@@ -43,6 +43,9 @@ function web3_tuple_to_object(raw, decode_numeric_values = true) {
 			if(Number.isSafeInteger(parsed)) {
 				result[key] = parsed;
 			}
+			else {
+				result[key] = value;
+			}
 		}
 	}
 
