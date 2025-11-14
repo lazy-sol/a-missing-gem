@@ -1,3 +1,7 @@
+v1.0.16
+* fix: `web3_tuple_to_object` now consistently preserves non-numeric fields when `decode_numeric_values` is enabled;
+  only BN.js instances and safe integer strings are decoded, all other values remain intact
+
 v1.0.15
 * fix: `web3_tuple_to_object` no longer drops large numeric string fields;  
   string values outside JS safe integer range are preserved as strings

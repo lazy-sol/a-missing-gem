@@ -27,24 +27,17 @@ function web3_tuple_to_object(raw, decode_numeric_values = true) {
 
 		const value = raw[key];
 
-		if(!decode_numeric_values) {
-			result[key] = value;
-			continue;
-		}
+		result[key] = value;
 
-
-		if(BN.isBN(value)) {
-			result[key] = value.bitLength() <= MAX_SAFE_BITS? value.toNumber(): value.toString();
-			continue;
-		}
-
-		if(typeof value === "string" && /^\d+$/.test(value)) {
-			const parsed = Number(value);
-			if(Number.isSafeInteger(parsed)) {
-				result[key] = parsed;
+		if(decode_numeric_values) {
+			if(BN.isBN(value)) {
+				result[key] = value.bitLength() <= MAX_SAFE_BITS? value.toNumber(): value.toString();
 			}
-			else {
-				result[key] = value;
+			else if(typeof value === "string" && /^\d+$/.test(value)) {
+				const parsed = Number(value);
+				if(Number.isSafeInteger(parsed)) {
+					result[key] = parsed;
+				}
 			}
 		}
 	}
